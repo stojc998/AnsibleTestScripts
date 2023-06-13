@@ -1,0 +1,39 @@
+#da je delalo sem moral v VM z ansible pognat ansible-galaxy collection install community.mysql
+# in pa v VM kjer je db yum search python | grep -i mysql da sem nasel verzijo za python
+#ce ima db doloceno geslo za uporabnika je to treba v primer mysql to zapisat v .my.cnf file
+
+---
+- name: Setup db server  #name
+  hosts: db_mysql_server #module sta vedno v isti vrstici
+  become: yes
+  vars:
+    dbname: registrations
+    dbuser: registrator
+    dbpass: XMQNEBG5pmAIwg1sx9As
+  tasks:
+    - name: Install mysq
+      yum:
+        name: mariadb-server
+        state: present
+    - name: Start mysql
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+    - name: Install python mysql
+      yum:
+        name: python3-PyMySQL
+        state: present
+    - name: Create a test database
+      community.mysql.mysql_db:
+        name: "{{dbname}}"
+        state: present
+    - name: Create database user
+      community.mysql.mysql_user:
+        name: "{{dbuser}}"
+        password: "{{dbpass}}"
+        priv: '*.*:ALL'
+        state: present
+    - debug:
+        msg: "Creating db: {{dbname}}"
+        msg: "Creating user: {{dbuser}}"

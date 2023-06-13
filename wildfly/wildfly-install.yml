@@ -1,0 +1,40 @@
+- name: "WildFly installation and configuration"
+  hosts: webServer
+  become: yes
+  gather_facts: yes
+
+  collections:
+    - middleware_automation.wildfly
+  roles:
+    - role: wildfly_install
+
+  tasks:
+    - name: "Set up for WildFly instance {{ item }}."
+      ansible.builtin.include_role:
+        name: wildfly_systemd
+
+      ansible.buildin.file:
+        src: /opt/wildfly-{{ wildfly_version }}"
+        dest: /opt/wildfly
+        owner: wildfly
+        group: wildfly
+        state: link
+
+      ansible.builtin.shell:
+        cmd: mkdir /etc/wildfly/
+        cmd: cp "{{ wildfly_home }}"/docs/contrib/scripts/systemd/wildfly.conf /etc/wildfly/
+        cmd: cp "{{ wildfly_home }}"/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/system/
+        cmd: cp "{{ wildfly_home }}"/docs/contrib/scripts/systemd/launch.sh /opt/wildfly/bin/
+        #cmd: ln -s "{{ wildfly_home }}" /opt/wildfly
+    - name: "Wait for each instance HTTP ports to become available."
+      ansible.builtin.wait_for:
+        port: "{{ item }}"
+      loop: "{{ instance_http_ports }}"
+
+    - name: "Checks that WildFly server is running and accessible."
+      ansible.builtin.get_url:
+        url: "http://localhost:{{ port }}/"
+        dest: "/opt/{{ port }}"
+      loop: "{{ instance_http_ports }}"
+      loop_control:
+        loop_var: port

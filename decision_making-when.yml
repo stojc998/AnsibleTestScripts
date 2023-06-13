@@ -1,0 +1,32 @@
+---
+- name: Ekvivalent if case v Ansiblu
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install NTP
+      yum:
+        #name: ntp
+        name: chrony
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Install NTP on Ubuntu
+      apt:
+        name: ntp
+        state: present
+      when: ansible_distribution == "Ubuntu" #ansible_os_family == "Debian"
+
+    - name: Start and enable NTP on Redhat
+      service:
+        #name: ntpd
+        name: chronyd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Start and enable NTP on Debian
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
