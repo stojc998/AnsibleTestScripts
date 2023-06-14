@@ -1,0 +1,4 @@
+<nameOfWebServer> ansible_host=<IPOfWebServer> ansible_user=root
+
+[webServer]
+<nameOfWebServer>

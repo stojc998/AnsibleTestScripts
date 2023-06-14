@@ -1,0 +1,45 @@
+- name: "WildFly installation and configuration"
+  hosts: webServer
+  become: yes
+  gather_facts: yes
+  vars:
+    wildfly_install_workdir: '/opt/'
+    wildfly_config_base: standalone-ha.xml
+    wildfly_version: 27.0.1.Final
+    wildfly_java_package_name: java-11-openjdk-headless.x86_64
+    wildfly_home: "/opt/wildfly-{{ wildfly_version }}"
+
+    instance_http_ports:
+      - 8080
+
+  collections:
+    - middleware_automation.wildfly
+  roles:
+    - role: wildfly_install
+
+  tasks:
+    - name: "Set up for WildFly instance {{ item }}."
+      ansible.builtin.include_role:
+        name: wildfly_systemd
+      vars:
+        wildfly_config_base: 'standalone-ha.xml'
+        wildfly_instance_id: "{{ item }}"
+        #instance_name: "wildfly-{{ wildfly_instance_id }}"
+        wildfly_config_name: "{{ instance_name }}.xml"
+        wildfly_basedir_prefix: "/opt/{{ instance_name }}"
+        service_systemd_env_file: "/etc/wildfly-{{ item }}.conf"
+        service_systemd_conf_file: "/usr/lib/systemd/system/wildfly-{{ item }}.service"
+      loop: "{{ range(0,3) | list }}"
+
+    - name: "Wait for each instance HTTP ports to become available."
+      ansible.builtin.wait_for:
+        port: "{{ item }}"
+      loop: "{{ instance_http_ports }}"
+
+    - name: "Checks that WildFly server is running and accessible."
+      ansible.builtin.get_url:
+        url: "http://localhost:{{ port }}/"
+        dest: "/opt/{{ port }}"
+      loop: "{{ instance_http_ports }}"
+      loop_control:
+        loop_var: port

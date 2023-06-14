@@ -1,0 +1,15 @@
+
+wildfly_install_workdir: '/opt/'
+wildfly_config_base: standalone-ha.xml
+wildfly_version: 27.0.1.Final
+wildfly_java_package_name: java-11-openjdk-headless.x86_64
+wildfly_home: "/opt/wildfly-{{ wildfly_version }}"
+
+instance_http_ports:
+- 8080
+
+
+wildfly_config_base: 'standalone-ha.xml'
+#instance_name: "wildfly-{{ wildfly_instance_id }}"
+wildfly_config_name: "{{ instance_name }}.xml"
+wildfly_basedir_prefix: "/opt/{{ instance_name }}"
