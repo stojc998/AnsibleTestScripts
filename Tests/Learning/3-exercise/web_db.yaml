@@ -1,0 +1,33 @@
+---
+- name: Setup web servers
+  hosts: web_server
+  become: yes #uporabimo sudo
+  tasks:
+    - name: Install apache
+      yum:
+        name: httpd
+        state: present
+    - name: Start apache server
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: Copy index.html to web servers. 
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+
+- name: Setup db server
+  hosts: db_mysql_server
+  become: yes
+  tasks:
+    - name: Install mysql db
+      yum:
+        name: mariadb-server
+        state: present
+    - name: Start mysql
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+

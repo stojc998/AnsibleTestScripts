@@ -1,0 +1,17 @@
+---
+- name: Test if works
+  hosts: test
+  become: yes
+  tasks:
+    - name: Install apache
+      yum:
+        name: "{{item}}"
+        state: present
+      loop:
+        - wget
+        - vim
+        - git
+        - zip
+        - unzip
+      tags:
+        - packages

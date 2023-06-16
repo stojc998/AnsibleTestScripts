@@ -1,0 +1,65 @@
+---
+- name: Ekvivalent if case v Ansiblu
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install NTP
+      yum:
+        name: "{{item}}"
+        state: present
+      when: ansible_os_family == "RedHat"
+      loop:
+        - chrony # z loop lahko podamo listo stvari za inmstalirat
+        - wget
+        - vim
+        - git
+        - zip
+        - unzip
+        - net-tools
+        - java
+          #- wildfly
+
+    - name: Install NTP on Ubuntu
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu" #ansible_os_family == "Debian"
+      loop:
+        - ntp
+        - wget
+        - zip
+        - unzip
+        - vim
+        - net-tools
+
+    - name: Start and enable NTP on Redhat
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Start and enable NTP on Debian
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Bnner  file /etc/motd
+      copy:
+        content: "This {{ansible_distribution}} is Managed by Ansible. }"
+        dest: /etc/motd
+
+    - name: Directory for web
+      file:
+        path: /var/www/html/workapp
+        state: directory
+        mode: 0700
+
+    - name: Create a file in /var/www/html/workapp
+      file:
+        path: /var/www/html/workapp/web.conf
+        state: touch
+        mode: 0600

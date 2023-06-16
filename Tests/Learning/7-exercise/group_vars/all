@@ -1,0 +1,4 @@
+# Variables accesable by ALL the hosts from the inventory file
+dbuser: test-admin
+dbpass: HH8DzcydqAzIP0eYnP6E
+dbname: test-cars

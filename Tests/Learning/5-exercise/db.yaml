@@ -1,0 +1,29 @@
+---
+- name: Setup db server  #name
+  hosts: db_mysql_server #module sta vedno v isti vrstici
+  become: yes
+  tasks:
+    - name: Install mysq
+      yum:
+        name: mariadb-server
+        state: present
+    - name: Start mysql
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+    - name: Install python mysql
+      yum:
+        name: python3-PyMySQL
+        state: present
+    - name: Create a test database
+      community.mysql.mysql_db:
+        name: cars
+        state: present
+    - name: Create database user
+      community.mysql.mysql_user:
+        name: admin
+        password: QzvLfxQi1e8BV1bk7VyM
+        priv: '*.*:ALL'
+        state: present
+

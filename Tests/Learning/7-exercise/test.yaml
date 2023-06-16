@@ -1,0 +1,9 @@
+---
+- name: Setup db server  #name
+  hosts: db_mysql_server #module sta vedno v isti vrstici
+  become: yes
+  tasks:
+    - name: Create a new database with name 'bobdata'
+      community.mysql.mysql_db:
+        name: bobdata
+        state: present

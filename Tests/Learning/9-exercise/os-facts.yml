@@ -1,0 +1,23 @@
+---
+- name: Fact variables about systems
+  hosts: all
+  tasks:
+    - name: Print OS name
+      debug:
+        var: ansible_distribution
+
+    - name: Print memory details
+      debug:
+        var: ansible_memory_mb
+
+    - name: Print real memory details
+      debug:
+        var: ansible_memory_mb.real.free
+
+    - name: Pri processor
+      debug:
+        var: ansible_processor
+
+    - name: Pri processor name
+      debug:
+        var: ansible_processor[2] #ker je array lahko izpisemo index kjer je

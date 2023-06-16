@@ -1,0 +1,16 @@
+---
+- name: Understanding presidence of variables
+  hosts: all
+  become: yes
+    #vars:
+    #user_name: playuser
+    #comment: Creating user from ansible playbook
+  tasks:
+    - name: Create user
+      user:
+        name: "{{user_name}}"
+        comment: "{{comment}}"
+      register: user_out
+
+    - debug:
+        var: user_out
